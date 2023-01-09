@@ -1,0 +1,26 @@
+{
+  "name": "userposts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start":"nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShaikMahimood/UserPosts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShaikMahimood/UserPosts/issues"
+  },
+  "homepage": "https://github.com/ShaikMahimood/UserPosts#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^6.8.2",
+    "mongoose-aggregate-paginate-v2": "^1.0.6",
+    "nodemon": "^2.0.20"
+  }
+}
