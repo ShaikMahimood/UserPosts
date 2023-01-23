@@ -1,10 +1,15 @@
 const Users = require("../model/user");
-const { aggr } = require('../db/db')
-function insertUsers(params) {
-  const users = new Users(params);
-  users.save((err, res) => {
-    if (!err) console.log(res);
-    else return err;
+const { Utils } = require('../helpers/utils');
+
+const utils = new Utils();;
+
+async function insertUsers(params) {
+  return new Promise(async (resolve, reject) => {
+    Users.insertMany(params, function (err, result) {
+      if (!err) {
+        resolve(result);
+      } else return reject(err);
+    });
   });
 }
 
@@ -22,8 +27,9 @@ function getUsers() {
 
 async function getUserPosts(req, res) {
   try {
-    const page = parseInt(req.query.page),limit = parseInt(req.query.limit);
-
+    const page = parseInt(req.query.page) || 1,
+      limit = parseInt(req.query.limit) || 10;
+      
     const result = await Users.aggregate([
       {
         $facet: {
@@ -50,33 +56,34 @@ async function getUserPosts(req, res) {
               $limit: limit,
             },
           ],
-          pagination:[
+          totalDocs: [
             {
-              $count:'totalDocs'
-            }
-          ]
+              $count: "count",
+            },
+          ],
         },
       },
     ]);
-    if(!result.length) throw 'Users Data Not Found!';
-    const totalDocs =result[0].pagination[0].totalDocs;
+
+    if (!result.length) throw "Users Data Not Found!";
+    const totalDocs = result[0].totalDocs[0].count;
     const users = result[0].users;
     const pagination = {
       totalDocs,
       limit,
       page,
-      totalPages: totalDocs/limit ,
+      totalPages: utils.calculatePagesCount(limit, totalDocs),
       pagingCounter: (page - 1) * limit + 1,
       hasPrevPage: page - 1 ? true : false,
       hasNextPage: page - limit ? true : false,
       prevPage: page - 1 ? page - 1 : null,
       nextPage: page - limit ? page + 1 : null,
-    }
-    const response = { users, pagination};
+    };
+    const response = { users, pagination };
     res.status(200).json({ status: "Success", data: response });
   } catch (error) {
     res.status(400).json({ status: "Error :", error: error });
   }
 }
-
+getUsers();
 module.exports = { insertUsers, getUsers, getUserPosts };

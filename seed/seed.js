@@ -19,7 +19,7 @@ async function getUserId() {
 
 async function seedPostsData() {
   const users = await getUserId();
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < users.length; i++) {
     const post = posts;
     for (j = 0; j < post.length; j++) {
       post[j]["userId"] = users[i];
